@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+python3 client.py
+send "Ben\r"
+send "past\r"
+kill -INT 888
+python3 client.py
+send "Ben\r"
+send "new\r"
+send "1\r"
+send "1\r"
+send "1\r"
+send "1\r"
+send "1\r"
+send "SW130EA\r"
+send "y\r"
+send "Ben\r"
+send "past\r"

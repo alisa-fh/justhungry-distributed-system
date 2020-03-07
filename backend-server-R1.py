@@ -101,6 +101,30 @@ class GreetingMaker1(object):
             pass
         return "Your Order of cost" + "is On its way to " + self.all_orders[-1][3]
 
+    def past_orders(self, name):
+        print("past orders")
+        your_orders = []
+        for order in self.all_orders:
+            if order[0] == name:
+                your_orders.append(order)
+        result = []
+        for order in your_orders:
+            c = 0
+            delivering = ""
+            for course, options in self.all_menus[order[1]][1].items():
+                print("past orders")
+
+                delivering += options[order[2][c-1]][0] + "\n "
+                c += 1
+            print(delivering)
+            print("past orders")
+
+            result = ["Ben your order from " + self.all_menus[order[1]]
+                      [0] + " of: \n " + delivering
+                      ]
+        print(result)
+        return result
+
     def update(self, data):
         self.all_orders = data
         print("Updating", self.all_orders)

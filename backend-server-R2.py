@@ -82,24 +82,47 @@ class GreetingMaker2(object):
 
         return ["28 Glebe Rd "]
 
-    def confirm_address(self, confirmation_address):
+    def confirm(self, confirmation_region):
         print("Called confirm_address(confirmation)")
-        self.all_orders[-1][3] += " " + confirmation_address
+        self.all_orders[-1][3] += " " + confirmation_region
 
         try:
-            R1.update(self.all_orders)
+            R2.update(self.all_orders)
         except:
             pass
         try:
             R3.update(self.all_orders)
         except:
             pass
-
-        return "Your Order is On its way"
+        return "Your Order of cost" + "is On its way to " + self.all_orders[-1][3]
 
     def update(self, data):
         self.all_orders = data
         print("Updating", self.all_orders)
+
+    def past_orders(self, name):
+        print("past orders")
+        your_orders = []
+        for order in self.all_orders:
+            if order[0] == name:
+                your_orders.append(order)
+        result = []
+        for order in your_orders:
+            c = 0
+            delivering = ""
+            for course, options in self.all_menus[order[1]][1].items():
+                print("past orders")
+
+                delivering += options[order[2][c-1]][0] + "\n "
+                c += 1
+            print(delivering)
+            print("past orders")
+
+            result = ["Ben your order from " + self.all_menus[order[1]]
+                      [0] + " of " + delivering
+                      ]
+        print(result)
+        return result
 
 
 # Other Preplicas

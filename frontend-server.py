@@ -9,30 +9,36 @@ class GreetingMaker(object):
         try:
             print("R1")
             return R1.get_menus(name)
-        except:
+        except Exception as e:
+            print(e)
             try:
                 print("R2")
                 return R2.get_menus(name)
-            except:
+            except Exception as e:
+                print(e)
                 try:
                     print("R3")
                     return R3.get_menus(name)
-                except:
+                except Exception as e:
+                    print(e)
                     return "No Backup Servers to get_menus(name)"
 
     def get_menu(self, n_menu):
         try:
             print("R1")
             return R1.get_menu(n_menu)
-        except:
+        except Exception as e:
+            print(e)
             try:
                 print("R2")
                 return R2.get_menu(n_menu)
-            except:
+            except Exception as e:
+                print(e)
                 try:
                     print("R3")
                     return R3.get_menu(n_menu)
-                except:
+                except Exception as e:
+                    print(e)
                     return "No Backup Servers to get_menu(n_menu)"
 
     def get_meal(self, order):
@@ -40,15 +46,18 @@ class GreetingMaker(object):
         try:
             print("R1")
             return R1.get_meal(order)
-        except:
+        except Exception as e:
+            print(e)
             try:
                 print("R2")
                 return R2.get_meal(order)
-            except:
+            except Exception as e:
+                print(e)
                 try:
                     print("R3")
                     return R3.get_meal(order)
-                except:
+                except Exception as e:
+                    print(e)
                     return "No Backup Servers to get_meal(order)"
 
     def get_address(self, postcode):
@@ -56,15 +65,18 @@ class GreetingMaker(object):
         try:
             print("R1")
             return R1.get_address(postcode)
-        except:
+        except Exception as e:
+            print(e)
             try:
                 print("R2")
                 return R2.get_address(postcode)
-            except:
+            except Exception as e:
+                print(e)
                 try:
                     print("R3")
                     return R3.get_address(postcode)
-                except:
+                except Exception as e:
+                    print(e)
                     return "No Backup Servers to get_address(postcode)"
 
     def confirm(self, confirmation):
@@ -72,15 +84,37 @@ class GreetingMaker(object):
         try:
             print("R1")
             return R1.confirm(confirmation)
-        except:
+        except Exception as e:
+            print(e)
             try:
                 print("R2")
                 return R2.confirm(confirmation)
-            except:
+            except Exception as e:
+                print(e)
                 try:
                     print("R3")
                     return R3.confirm(confirmation)
-                except:
+                except Exception as e:
+                    print(e)
+                    return "No Backup Servers to confirm_address(postcode)"
+
+    def past_orders(self, confirmation):
+
+        try:
+            print("R1")
+            return R1.past_orders(confirmation)
+        except Exception as e:
+            print(e)
+            try:
+                print("R2")
+                return R2.past_orders(confirmation)
+            except Exception as e:
+                print(e)
+                try:
+                    print("R3")
+                    return R3.past_orders(confirmation)
+                except Exception as e:
+                    print(e)
                     return "No Backup Servers to confirm_address(postcode)"
 
 
