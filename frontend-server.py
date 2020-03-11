@@ -1,5 +1,6 @@
 # saved as greeting-server.py
 import Pyro4
+import sys
 
 
 @Pyro4.expose
@@ -79,21 +80,25 @@ class GreetingMaker(object):
                     print(e)
                     return "No Backup Servers to get_address(postcode)"
 
-    def confirm(self, confirmation):
+    def confirm(self, confirmation, orderid):
 
         try:
             print("R1")
-            return R1.confirm(confirmation)
+            return R1.confirm(confirmation, orderid)
         except Exception as e:
             print(e)
+            exc_type, exc_obj, exc_tb = sys.exc_info()
+            fname = os.path.split(
+                exc_tb.tb_frame.f_code.co_filename)[1]
+            print(exc_type, fname, exc_tb.tb_lineno)
             try:
                 print("R2")
-                return R2.confirm(confirmation)
+                return R2.confirm(confirmation, orderid)
             except Exception as e:
                 print(e)
                 try:
                     print("R3")
-                    return R3.confirm(confirmation)
+                    return R3.confirm(confirmation, orderid)
                 except Exception as e:
                     print(e)
                     return "No Backup Servers to confirm_address(postcode)"
@@ -115,7 +120,11 @@ class GreetingMaker(object):
                     return R3.past_orders(confirmation)
                 except Exception as e:
                     print(e)
-                    return "No Backup Servers to confirm_address(postcode)"
+                    exc_type, exc_obj, exc_tb = sys.exc_info()
+                    fname = os.path.split(
+                        exc_tb.tb_frame.f_code.co_filename)[1]
+                    print(exc_type, fname, exc_tb.tb_lineno)
+                    return "No Backup Servers to show past orders"
 
 
 # Register the Backend Replicas

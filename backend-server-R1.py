@@ -1,8 +1,5 @@
 # saved as greeting-server.py
-import urllib
-import urllib.request
 import Pyro4
-import json
 
 
 @Pyro4.expose
@@ -10,13 +7,15 @@ class GreetingMaker1(object):
     def __init__(self):
 
         self.all_orders = []
-        self.all_menus = [["Alishaan's", {"starters": [("apples", 5), ("pears", 3)], "mains": [
-            ("apples", 5), ("pears", 3)], "desert": [("apples", 5), ("pears", 3)]}]]
+        self.all_menus = [["Alishaan's", {"starters": [("Prawn Cocktail", 5), ("Tomato Soup", 3)], "mains": [
+            ("Haddock Florentine", 9), ("Canelloni", 11)], "desert": [("Rasberry Ripple Icecream", 4), ("Cheeseboard", 6)]}], ["Lebeneat", {"starters": [("Wrap", 5), ("Tomato Soup", 3)], "mains": [
+                ("Cheese Ball", 9), ("Canelloni", 11)], "desert": [("Icycle", 4), ("Chocolate Sundae", 6)]}]]
 
     def get_menus(self, name):
         print("Called get_menus(self, name)")
-        self.all_orders.append([name, -1, -1, -1])
+        self.all_orders.append([name, -1, -1, -1, "timestamp"])
         print("Have recieved")
+
         # TODO send an update to all other replicas
         # TODO keep a timestamp
         try:
@@ -71,12 +70,14 @@ class GreetingMaker1(object):
         self.all_orders[-1][3] = postcode
         # TODO add webservice
 
-        j = urllib.request.urlopen(
-            'https://api.postcodes.io/postcodes/' + postcode)
-
-        str_response = j.read().decode('utf-8')
-        js = json.loads(str_response)
-
+        try:
+            region = webservice1.get_address(postcode)
+        except Exception as e:
+            try:
+                print(e)
+                region = webservice2.get_address(postcode)
+            except:
+                region = "Unable to find region"
         try:
             R2.update(self.all_orders)
         except:
@@ -85,12 +86,13 @@ class GreetingMaker1(object):
             R3.update(self.all_orders)
         except:
             pass
-        return js["result"]["region"]
+        return region
 
-    def confirm(self, confirmation_region):
-        print("Called confirm_address(confirmation)")
+    def confirm(self, confirmation_region, orderid):
+        print("Called confirm_address(confirmation)",
+              confirmation_region, self.all_orders)
         self.all_orders[-1][3] += " " + confirmation_region
-
+        self.all_orders[-1][4] = orderid
         try:
             R2.update(self.all_orders)
         except:
@@ -99,7 +101,7 @@ class GreetingMaker1(object):
             R3.update(self.all_orders)
         except:
             pass
-        return "Your Order of cost" + "is On its way to " + self.all_orders[-1][3]
+        return "Your Order is On its way to " + self.all_orders[-1][3]
 
     def past_orders(self, name):
         print("past orders")
@@ -107,9 +109,13 @@ class GreetingMaker1(object):
         for order in self.all_orders:
             if order[0] == name:
                 your_orders.append(order)
+        print("past orders1")
+
         result = []
         for order in your_orders:
             c = 0
+            print("past orders2")
+
             delivering = ""
             for course, options in self.all_menus[order[1]][1].items():
                 print("past orders")
@@ -119,9 +125,10 @@ class GreetingMaker1(object):
             print(delivering)
             print("past orders")
 
-            result = ["Ben your order from " + self.all_menus[order[1]]
-                      [0] + " of: \n " + delivering
-                      ]
+            result.insert(0, "Ben your order from " + self.all_menus[order[1]]
+                          [0] + " at " + order[4][:19] +
+                          " of: \n " + delivering
+                          )
         print(result)
         return result
 
@@ -135,10 +142,18 @@ R2 = Pyro4.Proxy("PYRONAME:R2")
 R3 = Pyro4.Proxy("PYRONAME:R3")
 #
 
+# Websercies
+webservice1 = Pyro4.Proxy("PYRONAME:webservice1")
+webservice2 = Pyro4.Proxy("PYRONAME:webservice2")
+#
+
 daemon = Pyro4.Daemon()                # make a Pyro daemon
 ns = Pyro4.locateNS()                  # find the name server
 # register the greeting maker as a Pyro object
-uri = daemon.register(GreetingMaker1)
+
+
+instance = GreetingMaker1()
+uri = daemon.register(instance)
 # register the object with a name in the name server
 ns.register("R1", uri)
 

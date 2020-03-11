@@ -1,4 +1,5 @@
 import Pyro4
+from datetime import datetime
 
 
 # use name server object lookup uri shortcut
@@ -6,7 +7,7 @@ greeting_maker = Pyro4.Proxy("PYRONAME:example.greeting")
 
 
 while True:
-    name = input("What is your name? ").strip()
+    name = input("Welcome to Just Hungry! What is your name? ").strip()
 
     while True:
         choice = input(
@@ -21,10 +22,22 @@ while True:
             print(" Here are all the restaurants near you!")
             for c, i in enumerate(all_menus):
                 print("{}. {}".format(c + 1, i[0]))
+
             # Get names of restaurants
 
             print("\n\n")
-            n_menu = int(input("Which restaurants menu do you want? ").strip())
+            while True:
+                try:
+                    n_menu = int(
+                        input("Which restaurants menu do you want? ").strip())
+                except:
+                    print("please input an integer")
+                else:
+                    if n_menu <= len(all_menus) and n_menu > 0:
+                        break
+                    else:
+                        print(
+                            "Please input a menu within the correct range of menus")
 
             #         self.all_menus = [["Alishaan's", {"starters": [("apples", 5), ("pears", 3)], "mains": [
             # ("apples", 5), ("pears", 3)], "desert": [("apples", 5), ("pears", 3)]}]]
@@ -35,18 +48,54 @@ while True:
                 print("\n {}".format(course))
                 c = 0
                 for j in options:
+                    print('{}) {:^25} £{}'.format(c, j[0], j[1]))
+
                     c += 1
-                    print("{}. {} \t|\t£{}".format(c, j[0], j[1]))
-            #  1. {} Price: {} 2. {} Price: {} 3 {} Price: {} \n\n Main\n------------\n\n 1. {} Price: {} 2. {} Price: {} 3 {} Price: {} \n\n Desert\n------------\n\n 1. {} Price: {} 2. {} Price: {} 3 {} Price: {}"
-                #   .format(chosen_menu[0], chosen_menu[1]["starters"][0][0], chosen_menu[1]["starters"][0][]))
 
             # Get send the Menu Back
 
-            starter = int(input("What is your starter? ").strip())
-            main = int(input("What is your main? ").strip())
-            desert = int(input("What is your desert? ").strip())
+            while True:
+                try:
+                    starter = int(
+                        input("What is your starter? (number) ").strip())
 
-            print(greeting_maker.get_meal([starter, main, desert]))
+                except:
+                    print("please input an integer")
+                else:
+                    if starter <= 1 and starter >= 0:
+                        break
+                    else:
+                        print(
+                            "Please input a option within the correct range of options")
+
+            while True:
+                try:
+                    main = int(input("What is your main? (number)").strip())
+
+                except:
+                    print("please input an integer")
+                else:
+                    if main <= 1 and main >= 0:
+                        break
+                    else:
+                        print(
+                            "Please input a option within the correct range of options")
+
+            while True:
+                try:
+                    desert = int(
+                        input("What is your desert? (number)").strip())
+
+                except:
+                    print("please input an integer")
+                else:
+                    if desert <= 1 and desert >= 0:
+                        break
+                    else:
+                        print(
+                            "Please input a option within the correct range of options")
+
+            greeting_maker.get_meal([starter, main, desert])
             # Returns cost of the meal
 
             postcode = input("What is your Postcode? ").strip()
@@ -63,11 +112,18 @@ while True:
                 print("That was not an option\n")
             if confirmation == "y":
                 # Returns your full order
-                print(greeting_maker.confirm(region))
+                now = datetime.now()
+                current_time = str(now)
+
+                print(greeting_maker.confirm(region, current_time + postcode))
             else:
                 corrected_region = input("What is your region then? ").strip()
                 # Returns your full order
-                print(greeting_maker.confirm(corrected_region))
+                now = datetime.now()
+                current_time = str(now)
+
+                print(greeting_maker.confirm(
+                    corrected_region, current_time + postcode))
             break
 
         print("That was not an option\n")

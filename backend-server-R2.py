@@ -7,8 +7,9 @@ class GreetingMaker2(object):
     def __init__(self):
 
         self.all_orders = []
-        self.all_menus = [["Alishaan's", {"starters": [("apples", 5), ("pears", 3)], "mains": [
-            ("apples", 5), ("pears", 3)], "desert": [("apples", 5), ("pears", 3)]}]]
+        self.all_menus = [["Alishaan's", {"starters": [("Prawn Cocktail", 5), ("Tomato Soup", 3)], "mains": [
+            ("Haddock Florentine", 9), ("Canelloni", 11)], "desert": [("Rasberry Ripple Icecream", 4), ("Cheeseboard", 6)]}], ["Lebeneat", {"starters": [("Wrap", 5), ("Tomato Soup", 3)], "mains": [
+                ("Cheese Ball", 9), ("Canelloni", 11)], "desert": [("Icycle", 4), ("Chocolate Sundae", 6)]}]]
 
     def get_menus(self, name):
         print("Called get_menus(self, name)")
@@ -67,25 +68,18 @@ class GreetingMaker2(object):
         return order
 
     def get_address(self, postcode):
-        print("Called get_address(postcode)")
+        print("Called get_address(postcode)", postcode)
         self.all_orders[-1][3] = postcode
         # TODO add webservice
 
         try:
-            R1.update(self.all_orders)
-        except:
-            pass
-        try:
-            R3.update(self.all_orders)
-        except:
-            pass
-
-        return ["28 Glebe Rd "]
-
-    def confirm(self, confirmation_region):
-        print("Called confirm_address(confirmation)")
-        self.all_orders[-1][3] += " " + confirmation_region
-
+            region = webservice1.get_address(postcode)
+        except Exception as e:
+            try:
+                print(e)
+                region = webservice2.get_address(postcode)
+            except:
+                region = "Unable to find region"
         try:
             R2.update(self.all_orders)
         except:
@@ -94,7 +88,22 @@ class GreetingMaker2(object):
             R3.update(self.all_orders)
         except:
             pass
-        return "Your Order of cost" + "is On its way to " + self.all_orders[-1][3]
+        return region
+
+    def confirm(self, confirmation_region, orderid):
+        print("Called confirm_address(confirmation)",
+              confirmation_region, self.all_orders)
+        self.all_orders[-1][3] += " " + confirmation_region
+        self.all_orders[-1][4] = orderid
+        try:
+            R2.update(self.all_orders)
+        except:
+            pass
+        try:
+            R3.update(self.all_orders)
+        except:
+            pass
+        return "Your Order is On its way to " + self.all_orders[-1][3]
 
     def update(self, data):
         self.all_orders = data
@@ -118,9 +127,10 @@ class GreetingMaker2(object):
             print(delivering)
             print("past orders")
 
-            result = ["Ben your order from " + self.all_menus[order[1]]
-                      [0] + " of " + delivering
-                      ]
+            result.insert(0, "Ben your order from " + self.all_menus[order[1]]
+                          [0] + " at " + order[4][:19] +
+                          " of: \n " + delivering
+                          )
         print(result)
         return result
 
@@ -131,10 +141,17 @@ R3 = Pyro4.Proxy("PYRONAME:R3")
 #
 
 
+# Websercies
+webservice1 = Pyro4.Proxy("PYRONAME:webservice1")
+webservice2 = Pyro4.Proxy("PYRONAME:webservice2")
+#
+
 daemon = Pyro4.Daemon()                # make a Pyro daemon
 ns = Pyro4.locateNS()                  # find the name server
 # register the greeting maker as a Pyro object
-uri = daemon.register(GreetingMaker2)
+
+instance = GreetingMaker2()
+uri = daemon.register(instance)
 # register the object with a name in the name server
 ns.register("R2", uri)
 
