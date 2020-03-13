@@ -23,9 +23,21 @@ class Webservice(object):
         str_response = j.read().decode('utf-8')
         js = json.loads(str_response)
 
+        if js["status"] != 200:
+            raise ValueError("There was no match for this postcode")
+
         self.previously_called[postcode] = js["result"]["region"]
 
+        webservice2.update(self.previously_called)
         return js["result"]["region"]
+
+    def update(self, data):
+        self.previously_called = data
+
+
+# Websercies
+webservice2 = Pyro4.Proxy("PYRONAME:webservice2")
+#
 
 
 daemon = Pyro4.Daemon()                # make a Pyro daemon

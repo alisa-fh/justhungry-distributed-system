@@ -1,6 +1,7 @@
 # saved as greeting-server.py
 import Pyro4
 import sys
+import os
 
 
 @Pyro4.expose
